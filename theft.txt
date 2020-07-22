@@ -1,0 +1,84 @@
+#include<P89V51RD2.H>
+#include<113_ALCD.c>
+#include<113_UART.c>
+#include<113_gsm.c>
+#include<adc.c>
+sbit motor=P1^3;int P1;
+sbit vibrator_senor=P1^1;
+sbit vibrator=P1^3;
+sbit fuel=P1^7;
+bit flag=0; bit flag1=0; bit flag5=0;
+int i;
+idata unsigned char Disp_Line1[17]="VOLTAGE = 000 V ";
+idata unsigned char Disp_Line2[17]="VOLTAGE1= 000 V ";
+
+
+
+Code for initialization of GSM modem
+
+//idata unsigned char UART_str[3]="00";
+void Device_Init( void );
+void main( void )
+{
+flag=0; flag1=0; flag5=0;
+motor=1;
+MSDelay(2000);
+vibrator=0;
+Device_Init( );
+GSM_Init();
+ALCD_Message(0x80,“Initializing ”);
+ALCD_Message( 0xC0,“GSM MODEM” );
+MSDelay(1000);
+}
+
+
+Code for vehicle start
+
+Rx_ST_Flag = 0;
+SMS_Rx_Poll( );
+MSDelay(500);Rx_count =0;
+i=0;
+while(Rx_data_arr[i] !='\0')
+{
+if(Rx_data_arr[i] =='R')
+{
+ALCD_Message( 0x01, "");
+if(s0==1 && Ignition_key==0)
+{
+relay=1;
+ALCD_Message( 0x01, "");
+ALCD_Message( 0x80, "VEHICLE IS");
+ALCD_Message( 0xC0, " STARTED USING APP ");
+GSM_Send_SMS( Mb_Num, "VEHICLE IS STARTED USING APP" );
+}}}
+
+
+Code for ADC
+
+ADC09_Start( 0, 0 );
+i = Voltage;
+Disp_Line1[12] = (Voltage%10)+48;
+Voltage = Voltage / 10;
+Disp_Line1[11] = (Voltage%10)+48;
+Voltage = Voltage / 10;
+Disp_Line1[10] = (Voltage%10)+48;
+[iv] Code for rash driving detection
+ALCD_Message( 0xC0,Disp_Line1 );
+MSDelay(1000);
+if(i>=170)
+{
+motor=0;
+ALCD_Message( 0x01,"" );
+ALCD_Message( 0x80, "RASH DRIVING" );
+GSM_Send_SMS( Mb_Num, "RASH DRIVING" );
+vibrator=1;
+MSDelay(1000);
+//vibrator=0;
+vibrator=0;
+i=0;
+}
+else
+{
+ALCD_Message( 0x01,"" );
+//motor=1;
+vibrator=0;
